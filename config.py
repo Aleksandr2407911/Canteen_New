@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class DatabaseConfig:
@@ -9,11 +9,11 @@ class DatabaseConfig:
 
 @dataclass
 class TgBot:
-    token: str = '6569223303:AAG36G9purad2ohDzXuYrFiba8vvp6Z7mqM' # Токен для доступа к телеграм-боту
-    admin_ids: list[int] = []                                         # Список id администраторов бота
+    token: str = '6982700202:AAGHvIHctbf2rPdXeOFcQKXUWjpHTs8aoG4' # Токен для доступа к телеграм-боту
+    admin_ids: list[int] = field(default_factory=list)         # Список id администраторов бота
 
 
 @dataclass
 class Config:
-    tg_bot: TgBot = TgBot() # загружаю объкт класса TgBot
-    db: DatabaseConfig = DatabaseConfig()
+    tg_bot: TgBot = field(default_factory=TgBot)  # Используем default_factory для создания нового экземпляра TgBot
+    db: DatabaseConfig = field(default_factory=DatabaseConfig) # Используем default_factory для создания нового экземпляра DatabaseConfig
