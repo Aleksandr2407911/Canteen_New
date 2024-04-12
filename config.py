@@ -17,3 +17,5 @@ class TgBot:
 class Config:
     tg_bot: TgBot = field(default_factory=TgBot)  # Используем default_factory для создания нового экземпляра TgBot
     db: DatabaseConfig = field(default_factory=DatabaseConfig) # Используем default_factory для создания нового экземпляра DatabaseConfig
+
+
