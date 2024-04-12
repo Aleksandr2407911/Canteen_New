@@ -2,16 +2,13 @@ import asyncio
 from aiogram import Bot, Dispatcher
 import admin_handlers
 import user_handlers
-from config import Config
+from config import config_my
 
 #функция конфигурирования и запуска бота
 async def main():
 
-    #загружаем конфиг в переменную Config
-    config: Config = Config()
-
     #регистрируем бота и диспетчер
-    bot = Bot(token=config.tg_bot.token)
+    bot = Bot(token=config_my.tg_bot.token)
     dp = Dispatcher()
 
     #регистрируем роутеры в диспетчер
@@ -25,10 +22,3 @@ async def main():
 if __name__ == '__main__':
     print('Запуск прошел успешно')
     asyncio.run(main())
-
-<<<<<<< HEAD
-#Сегодня хороший день чтобы захватить мир
-=======
-
-'''СОСИ НАХУЙ'''
->>>>>>> 3183af119c9602e51122d5e1796838577e2ebfeb
