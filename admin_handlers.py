@@ -45,3 +45,5 @@ async def deny_accept_order(message: Message):
 @router.message(F.text == 'Добавить меню 🍲')
 async def deny_accept_order(message: Message):
     await message.answer(text='Отправьте меню (файл фотмата xl)')
+
+#комментарий
