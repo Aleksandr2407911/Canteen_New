@@ -22,7 +22,7 @@ class Config:
 #создаем экземпляр класса Config и заполняем его данными
 config_my = Config(
     tg_bot=TgBot(
-        token='6982700202:AAGHvIHctbf2rPdXeOFcQKXUWjpHTs8aoG4',
+        token='6569223303:AAG36G9purad2ohDzXuYrFiba8vvp6Z7mqM',
         admin_ids=[544595768]
     ),
     db=DatabaseConfig(

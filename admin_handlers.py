@@ -17,7 +17,7 @@ button_1 = KeyboardButton(text='Добавить меню 🍲')
 button_2 = KeyboardButton(text='Подтверждение заказов 🕐')
 
 # Создаем объект клавиатуры и добавляем кнопки главного меню
-Keyboard = ReplyKeyboardMarkup(keyboard=[[button_1, button_2]], resize_keyboard=True)
+keyboard_main = ReplyKeyboardMarkup(keyboard=[[button_1], [button_2]], resize_keyboard=True)
 
 
 '''#Создаем объекты кнопок списка заказов нужно взять из базы данных
@@ -27,15 +27,21 @@ for i in range():
     list_buttons.append(button)
 
 # Создаем объект клавиатуры для списка заказов
-Keyboard_orders = ReplyKeyboardMarkup(keyboard=list_buttons)'''
+keyboard_orders = ReplyKeyboardMarkup(keyboard=list_buttons)'''
 
 
 # Этот хэндлер будет срабатывать на кнопку '/start'
 # и отправлять в чат клавиатуру главного меню
 @router.message(CommandStart())
 async def process_start_command(message: Message):
-    await message.answer('Hi', reply_markup=Keyboard)
+    await message.answer(text='/start', reply_markup=keyboard_main)
 
-@router.message(F.text)
+# Этот хэндлер срабатывает на сообщение <Подтверждение заказов 🕐>
+@router.message(F.text == 'Подтверждение заказов 🕐')
 async def deny_accept_order(message: Message):
-    await message.answer('Hi')
+    await message.answer(text='Подтверждение заказов 🕐', reply_markup=keyboard_orders)
+
+# Этот хэндлер срабатывает на сообщение <Добавить меню 🍲>
+@router.message(F.text == 'Добавить меню 🍲')
+async def deny_accept_order(message: Message):
+    await message.answer(text='Отправьте меню (файл фотмата xl)')

@@ -1,3 +1,4 @@
+import logging
 import asyncio
 from aiogram import Bot, Dispatcher
 import admin_handlers
@@ -21,4 +22,5 @@ async def main():
 
 if __name__ == '__main__':
     print('Запуск прошел успешно')
+    logging.basicConfig(level=logging.DEBUG)
     asyncio.run(main())
