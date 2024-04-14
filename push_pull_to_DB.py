@@ -40,16 +40,17 @@ def fill_product_table(actual_day_menu):
 try:
     # Подключение к БД MySQL
     connection = pymysql.connect(
-        host='',
-        port=,
-        user='',
-        password='',
-        database='',
+        host='localhost',
+        port=3306,
+        user='root',
+        password='cahat50',
+        database='canteen',
         cursorclass=pymysql.cursors.DictCursor
     )
 
-    # print(fetch_data_from_table('categories'))
-    # clear_table('categories')
+    print(fetch_data_from_table('categories'))
+    #clear_table('categories')
+
 
 except Exception as e:
     print('Error3:', e)
