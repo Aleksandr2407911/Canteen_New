@@ -57,3 +57,14 @@ def find_daily_menu():
         list_for_daily_menu.append((first, second, third, fourth))
 
     return list_for_daily_menu
+
+for i in find_daily_menu():
+    print(i)
+
+# Функция возращает сортированный список состоящий из категорий товаров взятой в xl, 
+# принимает функцию find_daily_menu, без скобочек
+def take_categories(find_daily_menu):
+    list_catigories = set()
+    for i in find_daily_menu():
+        list_catigories.add(i[3])
+    return sorted(list_catigories)

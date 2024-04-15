@@ -23,7 +23,7 @@ class Config:
 config_my = Config(
     tg_bot=TgBot(
         token='6569223303:AAG36G9purad2ohDzXuYrFiba8vvp6Z7mqM',
-        admin_ids=[544595768]
+        admin_ids=[544595769] # Если хочешь поменять на свой айди помений последнюю цифру на 8 
     ),
     db=DatabaseConfig(
         database='',

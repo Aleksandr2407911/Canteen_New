@@ -43,13 +43,14 @@ try:
         host='localhost',
         port=3306,
         user='root',
-        password='cahat50',
+        password='cahamysqlt50',
         database='canteen',
         cursorclass=pymysql.cursors.DictCursor
     )
 
     print(fetch_data_from_table('categories'))
     #clear_table('categories')
+    fill_categories_table(actual_day_menu)
 
 
 except Exception as e:
