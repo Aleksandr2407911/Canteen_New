@@ -37,20 +37,28 @@ def fill_product_table(actual_day_menu):
     connection.close()
 
 
+def fetch_product_based_on_category(category):
+    with connection.cursor() as cursor:
+        queries_function.fetch_product_based_on_category(cursor, category)
+    data = cursor.fetchall()
+    return data
+
+
 try:
     # Подключение к БД MySQL
     connection = pymysql.connect(
         host='localhost',
         port=3306,
         user='root',
-        password='cahamysqlt50',
-        database='canteen',
+        password='',
+        database='tg_bot',
         cursorclass=pymysql.cursors.DictCursor
     )
 
-    print(fetch_data_from_table('categories'))
+    #print(fetch_data_from_table('product'))
     #clear_table('categories')
-    fill_categories_table(actual_day_menu)
+    #fill_categories_table(actual_day_menu)
+    print(fetch_product_based_on_category('Салаты'))
 
 
 except Exception as e:

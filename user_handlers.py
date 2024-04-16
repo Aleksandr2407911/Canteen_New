@@ -1,9 +1,11 @@
 from aiogram import Router
 from aiogram.filters import Command, CommandStart
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup, Message,
-                            KeyboardButton, ReplyKeyboardMarkup)
+                            KeyboardButton, ReplyKeyboardMarkup, CallbackQuery)
 import xlsx_parse
+import push_pull_to_DB
 from aiogram import F
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 #инициализируем роутер уровня модуля
 router = Router()
@@ -17,6 +19,32 @@ button_3 = KeyboardButton(text='Мои заказы 🕐')
 Keyboard = ReplyKeyboardMarkup(keyboard=[[button_1], [button_2], [button_3]], resize_keyboard= True)
 
 
+# Функция для создания словарей под категории для будущего использования в инлайн кнопках (на основе БД)
+def compose_dc_for_categories():
+    list_for_dc = push_pull_to_DB.fetch_data_from_table('categories')
+    dc_for_categories = {}
+    
+    for i in list_for_dc:
+        dc_for_categories[f"category_{i['category']}"] = i['category']
+
+    return dc_for_categories
+
+
+# Функция создает клавиатуру на основе вытащенной из БД информации про категории
+async def build_inline_keyboard_categories(buttons):
+    keyboard_list = InlineKeyboardBuilder()
+    for callback, text in buttons.items():
+        keyboard_list.add(InlineKeyboardButton(text=text, callback_data=callback))
+    return keyboard_list.adjust(2).as_markup()
+
+
+async def build_inline_keyboard_product(buttons):
+    keyboard_list = InlineKeyboardBuilder()
+    
+
+"""
+ЭТО ТО ЧТО САНЯ ДЕЛАЛ
+
 #Создаем объекты кнопок для категорий меню нужно взять из базы данных
 list_buttons = []
 for i in xlsx_parse.take_categories(xlsx_parse.find_daily_menu):
@@ -25,7 +53,7 @@ for i in xlsx_parse.take_categories(xlsx_parse.find_daily_menu):
 
 # Создаем объект клавиатуры для категорий меню
 keyboard_categories = InlineKeyboardMarkup(inline_keyboard=list_buttons)
-
+"""
 
 # Этот хэндлер будет срабатывать на кнопку '/start'
 # и отправлять в чат клавиатуру главного меню
@@ -33,8 +61,15 @@ keyboard_categories = InlineKeyboardMarkup(inline_keyboard=list_buttons)
 async def process_start_command(message: Message):
     await message.answer(text='Hi', reply_markup=Keyboard)
 
+
 #этот хэндлер будет срабатывать на кнопку Меню 🍲
 @router.message(F.text == 'Меню 🍲')
 async def process_menu_command(message: Message):
-    await message.answer(text='Меню 🍲', reply_markup=keyboard_categories)
+    await message.answer(text='Меню 🍲', reply_markup= await build_inline_keyboard_categories(compose_dc_for_categories()))
 
+#хэндлер обрабатывает все кнопки category
+@router.callback_query(lambda callback: callback.data.startswith('category_'))
+async def get_back_from_category(callback: CallbackQuery):
+    temp = compose_dc_for_categories()
+    callback_data = temp[callback.data]
+    await callback.message.answer(callback_data)

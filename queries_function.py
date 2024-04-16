@@ -76,3 +76,15 @@ def insert_product(cursor, daily_data):
         return 'ok'
     except Exception as e:
         return f"Error5: {e}"
+
+
+def fetch_product_based_on_category(cursor, category):
+    try:
+        category_products = """SELECT *
+                            FROM product
+                            WHERE category_id = (SELECT id
+					                            FROM categories
+                                                WHERE category = %s)"""
+        cursor.execute(category_products, category)
+    except Exception as e:
+        return f"Error6: {e}"
