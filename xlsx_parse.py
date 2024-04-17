@@ -58,13 +58,14 @@ def find_daily_menu():
 
     return list_for_daily_menu
 
-for i in find_daily_menu():
-    print(i)
 
-# Функция возращает сортированный список состоящий из категорий товаров взятой в xl, 
-# принимает функцию find_daily_menu, без скобочек
+# Функция возращает словарь состоящий из категорий товаров взятой в xl, 
+# принимает функцию find_daily_menu, без скобочек, НЕ ЗАБУДЬ ОТСОРТИРОВАТЬ
 def take_categories(find_daily_menu):
-    list_catigories = set()
+    dict_catigories = dict()
     for i in find_daily_menu():
-        list_catigories.add(i[3])
-    return sorted(list_catigories)
+        dict_catigories[i[3]] = dict_catigories.get(i[3], []) + [i[0]]
+    return dict_catigories
+
+'''for key, value in take_categories(find_daily_menu).items():
+    print(key, value)'''
