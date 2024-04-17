@@ -32,14 +32,14 @@ def fetch_data_from_table(table_name):
 def fill_product_table(actual_day_menu):
     with connection.cursor() as cursor:
         for i in actual_day_menu:
-            print(queries_function.insert_product(cursor, i))
+            queries_function.insert_product(cursor, i)
     connection.commit()
     connection.close()
 
 
-def fetch_product_based_on_category(category):
+def fetch_productlist_based_on_category(category_name):
     with connection.cursor() as cursor:
-        queries_function.fetch_product_based_on_category(cursor, category)
+        queries_function.fetch_product_based_on_category(cursor, category_name)
     data = cursor.fetchall()
     return data
 
@@ -50,15 +50,15 @@ try:
         host='localhost',
         port=3306,
         user='root',
-        password='',
+        password='Sprint_1234',
         database='tg_bot',
         cursorclass=pymysql.cursors.DictCursor
     )
 
-    #print(fetch_data_from_table('product'))
-    #clear_table('categories')
-    #fill_categories_table(actual_day_menu)
-    print(fetch_product_based_on_category('Салаты'))
+    #print(fetch_data_from_table('categories'))
+    #clear_table('product')
+    #fill_product_table(actual_day_menu)
+    #print(fetch_productlist_based_on_category('Салаты'))
 
 
 except Exception as e:

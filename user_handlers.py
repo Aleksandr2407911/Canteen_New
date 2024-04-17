@@ -29,17 +29,23 @@ def compose_dc_for_categories():
 
     return dc_for_categories
 
+"""
+def compose_dc_products_in_exact_category(category_name):
+    list_for_dc = push_pull_to_DB.fetch_productlist_based_on_category(category_name)
+    dc_for_products = {}
+    
+    for i in list_for_dc:
+        dc_for_products[f"product_{i['name']}"] = i['name']
+        
+    return dc_for_products
+"""
 
 # Функция создает клавиатуру на основе вытащенной из БД информации про категории
-async def build_inline_keyboard_categories(buttons):
+async def build_inline_keyboard(buttons):
     keyboard_list = InlineKeyboardBuilder()
     for callback, text in buttons.items():
         keyboard_list.add(InlineKeyboardButton(text=text, callback_data=callback))
     return keyboard_list.adjust(2).as_markup()
-
-
-async def build_inline_keyboard_product(buttons):
-    keyboard_list = InlineKeyboardBuilder()
     
 
 """
@@ -65,11 +71,17 @@ async def process_start_command(message: Message):
 #этот хэндлер будет срабатывать на кнопку Меню 🍲
 @router.message(F.text == 'Меню 🍲')
 async def process_menu_command(message: Message):
-    await message.answer(text='Меню 🍲', reply_markup= await build_inline_keyboard_categories(compose_dc_for_categories()))
+    await message.answer(text='Меню 🍲', reply_markup= await build_inline_keyboard(compose_dc_for_categories()))
 
+'''
 #хэндлер обрабатывает все кнопки category
 @router.callback_query(lambda callback: callback.data.startswith('category_'))
 async def get_back_from_category(callback: CallbackQuery):
     temp = compose_dc_for_categories()
     callback_data = temp[callback.data]
-    await callback.message.answer(callback_data)
+    await callback.message.answer(text= callback_data, reply_markup= await build_inline_keyboard(compose_dc_products_in_exact_category(callback_data)))
+
+
+#@router.callback_query(lambda callback: callback.data.startswith('product_'))
+#async def get_back_data_aboutproduct(callback: CallbackQuery):
+'''
