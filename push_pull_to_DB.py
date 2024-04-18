@@ -50,7 +50,7 @@ try:
         host='localhost',
         port=3306,
         user='root',
-        password='',
+        password='Sprint_1234',
         database='tg_bot',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -59,10 +59,6 @@ try:
     #clear_table('product')
     #fill_product_table(actual_day_menu)
     #print(fetch_productlist_based_on_category('Горячее'))
-
-    text = "АААААААААААААААААААААААААААа"
-    byte_size = len(text.encode("utf-8"))
-    print("Размер строки в байтах:", byte_size)
 
     
 except Exception as e:

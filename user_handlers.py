@@ -19,13 +19,19 @@ button_3 = KeyboardButton(text='Мои заказы 🕐')
 Keyboard = ReplyKeyboardMarkup(keyboard=[[button_1], [button_2], [button_3]], resize_keyboard= True)
 
 
+def modify_string_to_correct_size(string):
+    if len(string.encode("utf-8")) > 64:
+        string = string[:27] + '...'
+    return string
+
+
 # Функция для создания словарей под категории для будущего использования в инлайн кнопках (на основе БД)
 def compose_dc_for_categories():
     list_for_dc = push_pull_to_DB.fetch_data_from_table('categories')
     dc_for_categories = {}
     
     for i in list_for_dc:
-        dc_for_categories[f"category_{i['category']}"] = i['category']
+        dc_for_categories[modify_string_to_correct_size(f"c_{i['category']}")] = i[modify_string_to_correct_size('category')]
 
     return dc_for_categories
 
@@ -35,7 +41,7 @@ def compose_dc_products_in_exact_category(category_name):
     dc_for_products = {}
     
     for i in list_for_dc:
-        dc_for_products[f"product_{i['name']}"] = i['name']
+        dc_for_products[modify_string_to_correct_size(f"p_{i['name']}")] = i[modify_string_to_correct_size('name')]
         
     return dc_for_products
 
@@ -46,20 +52,7 @@ async def build_inline_keyboard(buttons):
     for callback, text in buttons.items():
         keyboard_list.add(InlineKeyboardButton(text=text, callback_data=callback))
     return keyboard_list.adjust(2).as_markup()
-    
 
-"""
-ЭТО ТО ЧТО САНЯ ДЕЛАЛ
-
-#Создаем объекты кнопок для категорий меню нужно взять из базы данных
-list_buttons = []
-for i in xlsx_parse.take_categories(xlsx_parse.find_daily_menu):
-    button = [InlineKeyboardButton(text=i, callback_data=i)] # НЕОБХОДИМО ПОМЕНЯТЬ CALBACK_DATA, чтобы не было случайного вызова
-    list_buttons.append(button)
-
-# Создаем объект клавиатуры для категорий меню
-keyboard_categories = InlineKeyboardMarkup(inline_keyboard=list_buttons)
-"""
 
 # Этот хэндлер будет срабатывать на кнопку '/start'
 # и отправлять в чат клавиатуру главного меню
@@ -67,29 +60,20 @@ keyboard_categories = InlineKeyboardMarkup(inline_keyboard=list_buttons)
 async def process_start_command(message: Message):
     await message.answer(text='Hi', reply_markup=Keyboard)
 
-""" 
+ 
 #этот хэндлер будет срабатывать на кнопку Меню 🍲
 @router.message(F.text == 'Меню 🍲')
 async def process_menu_command(message: Message):
     await message.answer(text='Меню 🍲', reply_markup= await build_inline_keyboard(compose_dc_for_categories()))
-""" 
 
-
-@router.message(F.text == 'Меню 🍲')
-async def process_menu_command(message: Message):
-    temp = compose_dc_products_in_exact_category('Горячее')
-    keyboard = await build_inline_keyboard(temp)
-    await message.answer(text='Меню 🍲', reply_markup=keyboard)
-""" 
-    
 
 #хэндлер обрабатывает все кнопки category
-@router.callback_query(lambda callback: callback.data.startswith('category_'))
+@router.callback_query(lambda callback: callback.data.startswith('c_'))
 async def get_back_from_category(callback: CallbackQuery):
     temp = compose_dc_for_categories()
     callback_data = temp[callback.data]
     await callback.message.answer(text= callback_data, reply_markup= await build_inline_keyboard(compose_dc_products_in_exact_category(callback_data)))
-""" 
 
-#@router.callback_query(lambda callback: callback.data.startswith('product_'))
+
+#@router.callback_query(lambda callback: callback.data.startswith('p_'))
 #async def get_back_data_aboutproduct(callback: CallbackQuery):
