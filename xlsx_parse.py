@@ -66,20 +66,3 @@ def take_categories(find_daily_menu):
     for i in find_daily_menu():
         list_catigories.add(i[3])
     return sorted(list_catigories)
-
-"""
-# Функция для создания словарей под продукты и категорию для будущего использования в кнопках (на основе Excel)
-def compose_dc():
-    list_for_dc = find_daily_menu()
-    dc_for_products = {}
-    dc_for_categories = {}
-    
-    for i in range(len(list_for_dc)):
-        dc_for_products[f"{'A' + str(i + 1)}"] = list_for_dc[i][0]
-        dc_for_categories[list_for_dc[i][3]] = list_for_dc[i][3]
-
-    return dc_for_products, dc_for_categories
-
-# Использование функции
-# products_dict, categories_dict = compose_dc()
-"""
