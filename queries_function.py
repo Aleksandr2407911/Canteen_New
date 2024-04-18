@@ -64,6 +64,11 @@ def insert_categories(cursor, category):
 
 
 def insert_product(cursor, daily_data):
+    """
+    Вставляет продукты в БД
+    Первый запрос проверяет наличие продукта, если он есть, он не будет добавляться
+    Второй запрос добавляет продукт в таблицу product
+    """
     try:
         # Проверка существует ли запись в таблице
         check_query = """SELECT COUNT(*) AS count
@@ -91,6 +96,9 @@ def insert_product(cursor, daily_data):
 
 
 def fetch_product_based_on_category(cursor, category):
+    """
+    Достает все продукты по определенной категории
+    """
     try:
         category_products = """SELECT *
                             FROM product

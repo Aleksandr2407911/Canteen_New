@@ -5,6 +5,9 @@ from datetime import datetime
 
 
 def correct_string(string):
+    """
+    Функция удаляет случайные пробелы, которые могут быть поставлены заполнителем экселя
+    """
     temp = string.split()
     for i in range(len(temp)):
         if r'\xa0' in temp[i]:
@@ -48,6 +51,9 @@ for _ in data_in_day:
 
 
 def find_daily_menu():
+    """
+    Возвращает список кортежей меню из файла эксель
+    """
     for i in range(2, count_lines + 1):
         first = correct_string(data_in_day['A' + str(i)].value)
         second = correct_string(data_in_day['B' + str(i)].value)
@@ -58,11 +64,3 @@ def find_daily_menu():
 
     return list_for_daily_menu
 
-
-# Функция возращает сортированный список состоящий из категорий товаров взятой в xl, 
-# принимает функцию find_daily_menu, без скобочек
-def take_categories(find_daily_menu):
-    list_catigories = set()
-    for i in find_daily_menu():
-        list_catigories.add(i[3])
-    return sorted(list_catigories)
