@@ -38,22 +38,26 @@ dc_for_days = {
 }
 
 
-book = load_workbook(filename="Menu.xlsx")
+book = load_workbook(filename= "Menu.xlsx")
 
 day_in_russian = dc_for_days[day_name]
 data_in_day = book[day_in_russian]
-count_lines = 0
 list_for_daily_menu = []
 
+
 # Находит кол-во линий в экселе
-for _ in data_in_day:
-    count_lines += 1
+def count_lines_in_menu():
+    count_lines = 0
+    for _ in data_in_day:
+        count_lines += 1
+    return count_lines
 
 
 def find_daily_menu():
     """
     Возвращает список кортежей меню из файла эксель
     """
+    count_lines = count_lines_in_menu()
     for i in range(2, count_lines + 1):
         first = correct_string(data_in_day['A' + str(i)].value)
         second = correct_string(data_in_day['B' + str(i)].value)
@@ -63,4 +67,3 @@ def find_daily_menu():
         list_for_daily_menu.append((first, second, third, fourth))
 
     return list_for_daily_menu
-

@@ -63,7 +63,7 @@ try:
     # print(fetch_data_from_table('categories'))
     # clear_table('product')
     # fill_product_table(actual_day_menu)
-    # print(fetch_productlist_based_on_category('Горячее'))
+    #print(fetch_productlist_based_on_category('Горячее'))
 
 
 except Exception as e:
