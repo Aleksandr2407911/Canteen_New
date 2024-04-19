@@ -8,18 +8,21 @@ def correct_string(string):
     """
     Функция удаляет случайные пробелы, которые могут быть поставлены заполнителем экселя
     """
-    temp = string.split()
-    for i in range(len(temp)):
-        if r'\xa0' in temp[i]:
-            temp[i] = temp[i].strip(r'\xa0')
-        else:
-            temp[i] = temp[i].strip()
+    if string is not None and isinstance(string, str):
+        temp = string.split()
+        for i in range(len(temp)):
+            if r'\xa0' in temp[i]:
+                temp[i] = temp[i].strip(r'\xa0')
+            else:
+                temp[i] = temp[i].strip()
 
-    for i in range(len(temp)):
-        if r'\xa0' in temp[i]:
-            temp[i] = ' '.join(temp[i].split(r'\xa0'))
+        for i in range(len(temp)):
+            if r'\xa0' in temp[i]:
+                temp[i] = ' '.join(temp[i].split(r'\xa0'))
 
-    return ' '.join(temp)
+        return ' '.join(temp)
+    if isinstance(string, int):
+        return string
 
 
 # Находит название сегодняшнего дня на аглийском
@@ -61,9 +64,11 @@ def find_daily_menu():
     for i in range(2, count_lines + 1):
         first = correct_string(data_in_day['A' + str(i)].value)
         second = correct_string(data_in_day['B' + str(i)].value)
-        third = data_in_day['C' + str(i)].value
+        third = correct_string(data_in_day['C' + str(i)].value)
         fourth = correct_string(data_in_day['D' + str(i)].value)
 
-        list_for_daily_menu.append((first, second, third, fourth))
+        temp = (first, second, third, fourth)
+        if temp != (None, None, None, None):    # Проверяет, чтобы кортеж не состоял из None
+            list_for_daily_menu.append((first, second, third, fourth))
 
     return list_for_daily_menu

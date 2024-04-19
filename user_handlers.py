@@ -43,7 +43,7 @@ def compose_dc_for_categories():
 
     for i in list_for_dc:
         dc_for_categories[modify_string_to_correct_size(
-            f"c_{i['category']}")] = i[modify_string_to_correct_size('category')]
+            f"c_{i['category']}")] = modify_string_to_correct_size(i['category'])
 
     return dc_for_categories
 
@@ -60,8 +60,9 @@ def compose_dc_products_in_exact_category(category_name):
     dc_for_products = {}
 
     for i in list_for_dc:
+        info_about_certain_product = (modify_string_to_correct_size(i['name']), i['price'], i['weight'])
         dc_for_products[modify_string_to_correct_size(
-            f"p_{i['name']}")] = i[modify_string_to_correct_size('name')]
+            f"p_{i['name']}")] = info_about_certain_product
 
     return dc_for_products
 
@@ -97,7 +98,7 @@ async def build_inline_keyboard_for_products(buttons):
     keyboard_list = InlineKeyboardBuilder()
     for callback, text in buttons.items():
         keyboard_list.add(InlineKeyboardButton(
-            text=text, callback_data=callback))
+            text=text[0], callback_data=callback))
     back_button = InlineKeyboardButton(text="Назад", callback_data="back_c")
     keyboard_list.row(back_button)
     return keyboard_list.adjust(1).as_markup()
@@ -116,18 +117,26 @@ async def process_menu_command(message: Message):
     await message.answer(text='Меню 🍲', reply_markup=await build_inline_keyboard_for_categories(compose_dc_for_categories()))
 
 
-# хэндлер обрабатывает все кнопки category и вывод, что находится в категории
+# хэндлер обрабатывает все кнопки category и выводит, что находится в категории
 @router.callback_query(lambda callback: callback.data.startswith('c_'))
 async def get_back_from_category(callback: CallbackQuery):
     temp = compose_dc_for_categories()
     callback_data = temp[callback.data]
+    await callback.answer() # Убирает мигание инлайн кнопки
     await callback.message.edit_text(text=callback_data, reply_markup=await build_inline_keyboard_for_products(compose_dc_products_in_exact_category(callback_data)))
 
 
 # хэндлер реагирует на кнопку назад
 @router.callback_query(F.data == "back_c")
 async def return_to_category(callback: CallbackQuery):
+    await callback.answer() # Убирает мигание инлайн кнопки
     await callback.message.edit_text(text='Меню 🍲', reply_markup=await build_inline_keyboard_for_categories(compose_dc_for_categories()))
 
-# @router.callback_query(lambda callback: callback.data.startswith('p_'))
-# async def get_back_data_aboutproduct(callback: CallbackQuery):
+"""
+# хэндлер реагирует на все кнопки product, выдает информацию о продукте
+@router.callback_query(lambda callback: callback.data.startswith('p_'))
+async def get_back_data_aboutproduct(callback: CallbackQuery):
+    temp = compose_dc_for_categories()
+    callback_data = temp[callback.data]
+    string = f"Название блюда: {callback_data[0]}\nСтоимость: {callback_data[1]}руб."
+"""
