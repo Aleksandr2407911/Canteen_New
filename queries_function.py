@@ -64,15 +64,47 @@ def insert_categories(cursor, category):
 
 
 def insert_product(cursor, daily_data):
+    """
+    Вставляет продукты в БД
+    Первый запрос проверяет наличие продукта, если он есть, он не будет добавляться
+    Второй запрос добавляет продукт в таблицу product
+    """
     try:
-        insert_to_table_product = """INSERT INTO product (name, price, weight, category_id)
-                                        VALUES (%s, %s, %s,
-                                        (SELECT id
-                                        FROM categories
-                                        WHERE category = %s)
-                                        )"""
-        cursor.execute(insert_to_table_product,
-                       (daily_data[0], daily_data[2], daily_data[1], daily_data[3]))
-        return 'ok'
+        # Проверка существует ли запись в таблице
+        check_query = """SELECT COUNT(*) AS count
+                       FROM product 
+                       WHERE name = %s"""
+        cursor.execute(check_query, daily_data[0])
+        result = cursor.fetchone()
+
+        # Проверка существует ли запись в таблице
+        if result['count'] > 0:
+            return "Запись уже существует"
+        else:
+            # Если записи нет, добавление записи
+            insert_to_table_product = """INSERT INTO product (name, price, weight, category_id)
+                                            VALUES (%s, %s, %s,
+                                            (SELECT id
+                                            FROM categories
+                                            WHERE category = %s)
+                                            )"""
+            cursor.execute(insert_to_table_product,
+                           (daily_data[0], daily_data[2], daily_data[1], daily_data[3]))
+            return 'ok'
     except Exception as e:
         return f"Error5: {e}"
+
+
+def fetch_product_based_on_category(cursor, category):
+    """
+    Достает все продукты по определенной категории
+    """
+    try:
+        category_products = """SELECT *
+                            FROM product
+                            WHERE category_id = (SELECT id
+					                            FROM categories
+                                                WHERE category = %s)"""
+        cursor.execute(category_products, category)
+    except Exception as e:
+        return f"Error6: {e}"
