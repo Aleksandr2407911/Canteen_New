@@ -3,12 +3,19 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup, Message,
                            KeyboardButton, ReplyKeyboardMarkup, CallbackQuery)
 import xlsx_parse
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.fsm.context import FSMContext
 import push_pull_to_DB
 from aiogram import F
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 # инициализируем роутер уровня модуля
 router = Router()
+
+
+class register_commands(StatesGroup):
+    category_name = State()
+
 
 # Создаем объект кнопок главного меню
 button_1 = KeyboardButton(text='Меню 🍲')
@@ -18,6 +25,11 @@ button_3 = KeyboardButton(text='Мои заказы 🕐')
 # Создаем объект клавиатуры и добавляем кнопки главного меню
 Keyboard = ReplyKeyboardMarkup(
     keyboard=[[button_1], [button_2], [button_3]], resize_keyboard=True)
+
+
+button_add = InlineKeyboardButton(text= 'Добавить в корзину', callback_data= 'add_to_thebin')
+button_go_products = InlineKeyboardButton(text= 'Назад', callback_data= 'back_p')
+keyboard_add_products = InlineKeyboardMarkup(inline_keyboard= [[button_add, button_go_products]])
 
 
 def modify_string_to_correct_size(string):
@@ -40,10 +52,12 @@ def compose_dc_for_categories():
     """
     list_for_dc = push_pull_to_DB.fetch_data_from_table('categories')
     dc_for_categories = {}
+    count = 0
 
     for i in list_for_dc:
+        count += 1
         dc_for_categories[modify_string_to_correct_size(
-            f"c_{i['category']}")] = modify_string_to_correct_size(i['category'])
+            f"c_{count}")] = modify_string_to_correct_size(i['category'])
 
     return dc_for_categories
 
@@ -59,10 +73,14 @@ def compose_dc_products_in_exact_category(category_name):
         category_name)
     dc_for_products = {}
 
+    for k, v in compose_dc_for_categories().items():
+        if v == category_name:
+            name_of_certain_category = k
+
     for i in list_for_dc:
         info_about_certain_product = (modify_string_to_correct_size(i['name']), i['price'], i['weight'])
-        dc_for_products[modify_string_to_correct_size(
-            f"p_{i['name']}")] = info_about_certain_product
+        key = "p " + f"{name_of_certain_category} " + i['name']
+        dc_for_products[modify_string_to_correct_size(key)] = info_about_certain_product
 
     return dc_for_products
 
@@ -132,11 +150,23 @@ async def return_to_category(callback: CallbackQuery):
     await callback.answer() # Убирает мигание инлайн кнопки
     await callback.message.edit_text(text='Меню 🍲', reply_markup=await build_inline_keyboard_for_categories(compose_dc_for_categories()))
 
-"""
+
 # хэндлер реагирует на все кнопки product, выдает информацию о продукте
-@router.callback_query(lambda callback: callback.data.startswith('p_'))
-async def get_back_data_aboutproduct(callback: CallbackQuery):
-    temp = compose_dc_for_categories()
-    callback_data = temp[callback.data]
-    string = f"Название блюда: {callback_data[0]}\nСтоимость: {callback_data[1]}руб."
-"""
+@router.callback_query(lambda callback: callback.data.startswith('p '))
+async def get_back_data_aboutproduct(callback: CallbackQuery, state: FSMContext):
+    distinguish_category_index = callback.data.split()[1]
+    dc_for_categ = compose_dc_for_categories()[distinguish_category_index]
+    product = compose_dc_products_in_exact_category(dc_for_categ)
+    product_info = product[callback.data]
+    string = f"Название блюда: {product_info[0]}\nСтоимость: {product_info[1]}руб.\nКоличество\\Вес: {product_info[2]}"
+
+    await state.update_data(category= dc_for_categ)
+    await callback.message.edit_text(text= string, reply_markup= keyboard_add_products)
+
+
+@router.callback_query(F.data == "back_p")
+async def return_to_products(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    category = data.get('category')  # Получаем сохраненное имя категории из состояния
+    await callback.answer()
+    await callback.message.edit_text(text='Меню 🍲', reply_markup=await build_inline_keyboard_for_products(compose_dc_products_in_exact_category(category)))
